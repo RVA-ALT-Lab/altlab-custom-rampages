@@ -26,6 +26,7 @@
  */
 
 
+defined( 'ABSPATH' ) or die( 'No script kiddies please!' );
 
 /*-------------------------------------------FIX COMMENT NAMES TO REFLECT DISPLAY NAMES-------------------------------------------*/
 //make sure comments reflect display name from https://wordpress.stackexchange.com/questions/31694/comments-do-not-respect-display-name-setting-how-to-make-plugin-to-overcome-thi
