@@ -174,7 +174,7 @@ function hook_gdpr_assets() {
     wp_register_script('cookie_consent_js','//cdnjs.cloudflare.com/ajax/libs/cookieconsent2/3.1.0/cookieconsent.min.js', null, null, true);
     wp_enqueue_script('cookie_consent_js');
 
-    wp_register_script('gdpr_popup_js', plugins_url('/assets/gdpr-popup.js', __FILE__), null, null, true);
+    wp_register_script('gdpr_popup_js', plugins_url('altlab-custom-rampages/assets/gdpr-popup.js', __FILE__), null, null, true);
     wp_enqueue_script('gdpr_popup_js');
 }
 
