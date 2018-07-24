@@ -2,24 +2,24 @@
 /**
  * Plugin Name: ALT LAB CUSTOM RAMPAGES FORCED ITEMS
  * Plugin URI: https://github.com/
- * Description: various things to make rampages behave details in plugin comments 
+ * Description: various things to make rampages behave details in plugin comments
  * Version: .7
  * Author: Tom Woodward
  * Author URI: http://bionicteaching.com
  * License: GPL2
  */
- 
+
  /*   2015 Tom Woodward   (email : bionicteaching@gmail.com)
- 
+
     This program is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License, version 2, as 
+    it under the terms of the GNU General Public License, version 2, as
     published by the Free Software Foundation.
- 
+
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
     GNU General Public License for more details.
- 
+
     You should have received a copy of the GNU General Public License
     along with this program; if not, write to the Free Software
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
@@ -35,7 +35,7 @@ function wpse31694_comment_author_display_name($author) {
     global $comment;
     if (!empty($comment->user_id)){
         $user=get_userdata($comment->user_id);
-        $author=$user->display_name;    
+        $author=$user->display_name;
     }
 
     return $author;
@@ -44,11 +44,11 @@ function wpse31694_comment_author_display_name($author) {
 /*-------------------------------------------NEW FILE TYPES ALLOWED HERE-------------------------------------------*/
 //allow some additional file types for upload
 function my_custom_mime_types( $mimes ) {
-    
+
         // New allowed mime types.
         $mimes['svg'] = 'image/svg+xml';
         $mimes['svgz'] = 'image/svg+xml';
-        $mimes['studio3'] = 'application/octet-stream'; 
+        $mimes['studio3'] = 'application/octet-stream';
 
         // Optional. Remove a mime type.
         unset( $mimes['exe'] );
@@ -95,16 +95,16 @@ function multisite_custom_css_map_meta_cap( $caps, $cap ) {
 include_once( ABSPATH . 'wp-admin/includes/plugin.php' );
 
 if ( is_plugin_active(  'h5p/h5p.php' ) ) {
-  //plugin is activated    
+  //plugin is activated
      add_action('wp_enqueue_scripts', 'h5pflex_widget_enqueue_script');
-} 
+}
 
 
-function h5pflex_widget_enqueue_script() {   
+function h5pflex_widget_enqueue_script() {
     $h5p_script = plugins_url( 'h5p/h5p-php-library/js/h5p-resizer.js', __DIR__);
     wp_enqueue_script( 'h5p_flex', $h5p_script, true );
-    
-    } 
+
+    }
 
 
 /*------------------------------------PRIVACY FOOTER  ---------------------------------------------------*/
@@ -112,7 +112,7 @@ function h5pflex_widget_enqueue_script() {
 function vcu_privacy_function() {
     $avoid = [29429, 29719];
     $id = get_current_blog_id();
-    if (!in_array($id, $avoid)) {   
+    if (!in_array($id, $avoid)) {
         echo '<style>.privacy-policy { display: block; background-color:#fff; margin: 2em 0; padding: 2em; z-index: 1000; overflow: hidden;} .privacy-policy a {color: #424242}</style>';
         echo '<div class="privacy-policy" id="private"><a href="https://rampages.us/privacy-policy/">Privacy Statement</a></div>';
     }
@@ -125,23 +125,23 @@ add_action( 'wp_footer', 'vcu_privacy_function', 100 );
 add_filter('manage_users_columns','remove_users_columns');
 function remove_users_columns($column_headers) {
             global $current_user;
-            $super_admins = get_super_admins();         
+            $super_admins = get_super_admins();
             if ( is_array( $super_admins ) && in_array( $current_user->user_login, $super_admins ) ){
                 return $column_headers;
             }
             else {
              unset($column_headers['email']);
              return $column_headers;
-        }    
+        }
 
 }
 
 
 /*------------------------------------CUSTOM PASSWORD RESET STUFF------------------------------------*/
-//deals with filtering application drama from VCU/Cisco 
+//deals with filtering application drama from VCU/Cisco
 
-add_filter( 'retrieve_password_title', 
-    function( $title ) 
+add_filter( 'retrieve_password_title',
+    function( $title )
     {
         $title = __( 'VCU Ram Pages Reset Request' );
         return $title;
@@ -157,9 +157,38 @@ function extraJsonData($response){
     $data = $response->data;
     $data['created'] =$blog_details->registered;
     $data['last_updated'] =$blog_details->last_updated;
-    $data['post_count'] =$blog_details->post_count;    
+    $data['post_count'] =$blog_details->post_count;
     $response->set_data($data);
     return $response;
 }
 
 add_filter('rest_index', 'extraJsonData');
+
+/*---------------------------------GDPR NONSENSE------------------------------*/
+
+function hook_gdpr() {
+    ?>
+    <link rel="stylesheet" type="text/css" href="//cdnjs.cloudflare.com/ajax/libs/cookieconsent2/3.1.0/cookieconsent.min.css" />
+    <script src="//cdnjs.cloudflare.com/ajax/libs/cookieconsent2/3.1.0/cookieconsent.min.js"></script>
+    <script>
+    window.addEventListener("load", function(){
+    window.cookieconsent.initialise({
+    "palette": {
+        "popup": {
+        "background": "#000"
+        },
+        "button": {
+        "background": "#f1d600"
+        }
+    },
+    "content": {
+        "dismiss": "Got it!",
+        "link": "Learn More",
+        "href": "https://rampages.us/privacy-policy"
+    }
+    })});
+    </script>
+    <?php
+}
+
+add_action('wp_head', 'hook_gdpr');
