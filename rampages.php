@@ -166,29 +166,16 @@ add_filter('rest_index', 'extraJsonData');
 
 /*---------------------------------GDPR NONSENSE------------------------------*/
 
-function hook_gdpr() {
-    ?>
-    <link rel="stylesheet" type="text/css" href="//cdnjs.cloudflare.com/ajax/libs/cookieconsent2/3.1.0/cookieconsent.min.css" />
-    <script src="//cdnjs.cloudflare.com/ajax/libs/cookieconsent2/3.1.0/cookieconsent.min.js"></script>
-    <script>
-    window.addEventListener("load", function(){
-    window.cookieconsent.initialise({
-    "palette": {
-        "popup": {
-        "background": "#000"
-        },
-        "button": {
-        "background": "#f1d600"
-        }
-    },
-    "content": {
-        "dismiss": "Got it!",
-        "link": "Learn More",
-        "href": "https://rampages.us/privacy-policy"
-    }
-    })});
-    </script>
-    <?php
+function hook_gdpr_assets() {
+
+    wp_register_style('cookie_consent','//cdnjs.cloudflare.com/ajax/libs/cookieconsent2/3.1.0/cookieconsent.min.css');
+    wp_enqueue_style('cookie_consent');
+
+    wp_register_script('cookie_consent_js','//cdnjs.cloudflare.com/ajax/libs/cookieconsent2/3.1.0/cookieconsent.min.js', null, null, true);
+    wp_enqueue_script('cookie_consent_js');
+
+    wp_register_script('gdpr_popup_js', plugins_url('/assets/gdpr-popup.js', __FILE__), null, null, true);
+    wp_enqueue_script('gdpr_popup_js');
 }
 
-add_action('wp_head', 'hook_gdpr');
+add_action('wp_enqueue_scripts', 'hook_gdpr_assets');
