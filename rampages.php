@@ -137,8 +137,8 @@ function remove_users_columns($column_headers) {
 }
 
 
-/*------------------------------------CUSTOM PASSWORD RESET STUFF------------------------------------*/
-//deals with filtering application drama from VCU/Cisco
+/*------------------------------------DEAL WITH OUR EMAIL FILTERING STUFF------------------------------------*/
+//deals with filtering application drama from VCU/Cisco for password resets
 
 add_filter( 'retrieve_password_title',
     function( $title )
@@ -147,6 +147,15 @@ add_filter( 'retrieve_password_title',
         return $title;
     }
 );
+
+
+
+//attempts to deal with activation email filtering issues
+add_filter( 'wpmu_signup_user_notification_subject', 'rampages_activation_subject', 10, 4 );
+
+function rampages_activation_subject( $text ) {
+    return 'Please activate your new Ram Pages account';
+}
 
 
 /*---------------------------------JSON MOD FOR ADDITIONAL SITE INFO----------------------------------*/
@@ -174,8 +183,17 @@ function hook_gdpr_assets() {
     wp_register_script('cookie_consent_js','//cdnjs.cloudflare.com/ajax/libs/cookieconsent2/3.1.0/cookieconsent.min.js', null, null, false);
     wp_enqueue_script('cookie_consent_js');
 
-    wp_register_script('gdpr_popup_js', plugins_url('altlab-custom-rampages/assets/gdpr-popup.js', __FILE__), null, null, false);
+    wp_register_script('gdpr_popup_js', plugins_url('assets/gdpr-popup.js', __FILE__), null, null, false);
     wp_enqueue_script('gdpr_popup_js');
 }
 
 add_action('wp_enqueue_scripts', 'hook_gdpr_assets');
+
+
+/*---------------------------NEW SITE DEFAULT COMMENTS OFF ---------------------------------------*/
+
+function require_comment_login_wpmu_new_blog_example( $blog_id ) {
+    update_blog_option($blog_id,'comment_registration',1);
+}
+add_action( 'wpmu_new_blog', 'require_comment_login_wpmu_new_blog_example', 10, 1 );
+
