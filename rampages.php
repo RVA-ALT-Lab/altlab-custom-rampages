@@ -197,3 +197,6 @@ function require_comment_login_wpmu_new_blog_example( $blog_id ) {
 }
 add_action( 'wpmu_new_blog', 'require_comment_login_wpmu_new_blog_example', 10, 1 );
 
+/*------------------------ FILTERING GRAVITY FORMS CONFIRMATION MESSAGE TO ALLOW VARIABLE BUT REMOVE SCIPTS ETC--------------------------------------*/
+
+add_filter( 'gform_sanitize_confirmation_message', '__return_true' );
