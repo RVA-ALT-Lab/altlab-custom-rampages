@@ -1,0 +1,10 @@
+li input[type=checkbox]:checked + label::after{
+  content:' . . . HIDDEN';
+}
+
+
+.hidden-list input[type=checkbox]:checked:before {
+    content: "\f158";
+    margin: -3px 0 0 -4px;
+    color: #1e8cbe;
+}

@@ -236,7 +236,7 @@ add_action( 'show_user_profile', 'hidden_site_user_profile_fields' );
 add_action( 'edit_user_profile', 'hidden_site_user_profile_fields' );
 
 function hidden_site_user_profile_fields( $user ) { ?>
-    <h3><?php _e("Hide a Site?", "blank"); ?></h3>
+    <h3><?php _e("<span class='dashicons dashicons-hidden'></span> Hide a Site?", "blank"); ?></h3>
     <?php rampages_get_user_sites($user->ID);?>
     <table class="form-table">
     <tr>
@@ -263,7 +263,7 @@ function save_hidden_site_user_profile_fields( $user_id ) {
 function rampages_get_user_sites($user_id){
     $user_blogs = get_blogs_of_user( $user_id );
     //var_dump($user_blogs);
-    echo 'Check the sites you would like to hide. Then update your profile.<ul>';
+    echo 'Check the sites you would like to hide. Do not forget to update your profile at the bottom of this page.<ul>';
     foreach ($user_blogs AS $user_blog) {
         echo '<li class="hidden-list"><input type="checkbox" name="blog-' . $user_blog->userblog_id .'" id="blog-' . $user_blog->userblog_id .'" value="' . $user_blog->userblog_id . '"/> <label for="blog-' . $user_blog->userblog_id .'">'.$user_blog->blogname.'</label></li>';
     }
@@ -276,7 +276,7 @@ function hidden_sites_js_enqueue($hook) {
     if ( 'profile.php' != $hook ) {
         return;
     }
-
+    wp_enqueue_style( 'hidden_sites_css', plugins_url('assets/hidden-sites.css', __FILE__), null, null, false);
     wp_enqueue_script( 'hidden_sites_js', plugins_url('assets/hidden-sites.js', __FILE__), null, null, false);
 }
 add_action( 'admin_enqueue_scripts', 'hidden_sites_js_enqueue' );
