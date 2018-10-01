@@ -236,7 +236,8 @@ add_action( 'show_user_profile', 'hidden_site_user_profile_fields' );
 add_action( 'edit_user_profile', 'hidden_site_user_profile_fields' );
 
 function hidden_site_user_profile_fields( $user ) { ?>
-    <h3><?php _e("<span class='dashicons dashicons-hidden'></span> Hide a Site?", "blank"); ?></h3>
+    <span class='dashicons dashicons-hidden big-eye'></span>
+    <h3><?php _e("Hide a Site?", "blank"); ?></h3>
     <?php rampages_get_user_sites($user->ID);?>
     <table class="form-table">
     <tr>

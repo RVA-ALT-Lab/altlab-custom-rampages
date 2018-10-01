@@ -1,5 +1,5 @@
 li input[type=checkbox]:checked + label::after{
-  content:' . . . HIDDEN';
+  content:' (hidden)';
 }
 
 
@@ -7,4 +7,12 @@ li input[type=checkbox]:checked + label::after{
     content: "\f158";
     margin: -3px 0 0 -4px;
     color: #1e8cbe;
+}
+
+
+.big-eye {
+	font-size: 3em;
+	text-align: center;
+	display: block;
+	width: 90px;
 }
