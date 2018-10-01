@@ -200,3 +200,87 @@ add_action( 'wpmu_new_blog', 'require_comment_login_wpmu_new_blog_example', 10, 
 /*------------------------ FILTERING GRAVITY FORMS CONFIRMATION MESSAGE TO ALLOW VARIABLE BUT REMOVE SCIPTS ETC--------------------------------------*/
 
 add_filter( 'gform_sanitize_confirmation_message', '__return_true' );
+
+
+
+/*------------------------ ADD REMOVE SELF FROM MY SITES LIST --------------------------------------*/
+
+
+
+function hidden_blogs($user_id){
+    //THIS SHOULD GO TO THE USER PROFILE MAYBE AND GET THE LIST -- DOES FILTER MY SITES PAGE AND DROP DOWN
+    $hidden_blogs = get_user_meta($user_id, 'my_hidden_sites', true); 
+    return $hidden_blogs;
+}
+
+function remove_selected_blogs_from_get_blogs($blogs) {
+    global $pagenow; //mostly works to allow full list on profile page but filter elsewhere
+    $newblogs = array();
+    $user_id = wp_get_current_user()->ID;
+    $hidden_blogs = explode(",",hidden_blogs($user_id));
+    if ( !is_super_admin() &&  $pagenow != 'profile.php') {
+        foreach ($blogs as $key => $value) {
+            if (!in_array($value->userblog_id, $hidden_blogs) )
+                $newblogs[$key] = $value;
+        }
+        return $newblogs;
+    } else {
+        return $blogs;
+    }
+}
+add_filter( 'get_blogs_of_user', 'remove_selected_blogs_from_get_blogs' );
+
+
+//add sites interface to user profile field
+add_action( 'show_user_profile', 'hidden_site_user_profile_fields' );
+add_action( 'edit_user_profile', 'hidden_site_user_profile_fields' );
+
+function hidden_site_user_profile_fields( $user ) { ?>
+    <h3><?php _e("Hide a Site?", "blank"); ?></h3>
+    <?php rampages_get_user_sites($user->ID);?>
+    <table class="form-table">
+    <tr>
+        <th><label for="my_hidden_sites"><?php _e(""); ?></label></th>
+        <td>
+            <input type="hidden" name="my_hidden_sites" id="my_hidden_sites" value="<?php echo esc_attr( get_the_author_meta( 'my_hidden_sites', $user->ID ) ); ?>" class="regular-text" /><br />
+            <span class="description"><?php _e(""); ?></span>
+        </td>
+    </tr>
+    </table>
+<?php }
+
+add_action( 'personal_options_update', 'save_hidden_site_user_profile_fields' );
+add_action( 'edit_user_profile_update', 'save_hidden_site_user_profile_fields' );
+
+function save_hidden_site_user_profile_fields( $user_id ) {
+    if ( !current_user_can( 'edit_user', $user_id ) ) { 
+        return false; 
+    }
+    update_user_meta( $user_id, 'my_hidden_sites', $_POST['my_hidden_sites'] );
+}
+
+
+function rampages_get_user_sites($user_id){
+    $user_blogs = get_blogs_of_user( $user_id );
+    //var_dump($user_blogs);
+    echo 'Check the sites you would like to hide. Then update your profile.<ul>';
+    foreach ($user_blogs AS $user_blog) {
+        echo '<li class="hidden-list"><input type="checkbox" name="blog-' . $user_blog->userblog_id .'" id="blog-' . $user_blog->userblog_id .'" value="' . $user_blog->userblog_id . '"/> <label for="blog-' . $user_blog->userblog_id .'">'.$user_blog->blogname.'</label></li>';
+    }
+    echo '</ul>';
+}
+
+
+
+function hidden_sites_js_enqueue($hook) {
+    if ( 'profile.php' != $hook ) {
+        return;
+    }
+
+    wp_enqueue_script( 'hidden_sites_js', plugins_url('assets/hidden-sites.js', __FILE__), null, null, false);
+}
+add_action( 'admin_enqueue_scripts', 'hidden_sites_js_enqueue' );
+
+
+
+
