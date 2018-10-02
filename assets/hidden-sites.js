@@ -37,3 +37,4 @@ function onChange(){
 	var hiddenSites = document.getElementById('my_hidden_sites');
 	 hiddenSites.value = newIds.join();
 }
+
