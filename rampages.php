@@ -151,6 +151,7 @@ add_filter( 'retrieve_password_title',
 
 
 //attempts to deal with activation email filtering issues
+add_filter( 'wpmu_signup_blog_notification_subject', 'rampages_activation_subject', 10, 4 );
 add_filter( 'wpmu_signup_user_notification_subject', 'rampages_activation_subject', 10, 4 );
 
 function rampages_activation_subject( $text ) {
@@ -200,6 +201,7 @@ add_action( 'wpmu_new_blog', 'require_comment_login_wpmu_new_blog_example', 10, 
 /*------------------------ FILTERING GRAVITY FORMS CONFIRMATION MESSAGE TO ALLOW VARIABLE BUT REMOVE SCIPTS ETC--------------------------------------*/
 
 add_filter( 'gform_sanitize_confirmation_message', '__return_true' );
+
 
 
 
