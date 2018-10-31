@@ -287,3 +287,29 @@ add_action( 'admin_enqueue_scripts', 'hidden_sites_js_enqueue' );
 
 
 
+//write to user profile if user is faculty
+
+
+function user_status ($user){
+    $email = $user->user_email;
+    $user_id = $user->ID;
+    var_dump($user_id);
+    $url_email = urlencode($email);
+    $url = 'https://phonebook.vcu.edu/?Qname=' . $url_email . '&Qdepartment=*';
+    $site = file_get_contents($url);
+    $fail = preg_match('/No matches/', $site, $matches);
+    if ($fail === 0) {
+        $status = 'faculty';
+        var_dump($status);
+        var_dump(add_user_meta( $user_id, 'user_vcu_status',  $status, true ));
+    } else {
+        $status = 'student';
+        var_dump($status);
+        add_user_meta( $user_id, 'user_vcu_status', $status, true );        
+    }
+}
+
+
+add_action ('wpmu_new_user', 'user_status', 10, 1);
+
+add_action( 'edit_user_profile', 'user_status', 10, 1 );
