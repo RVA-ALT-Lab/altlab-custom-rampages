@@ -293,23 +293,63 @@ add_action( 'admin_enqueue_scripts', 'hidden_sites_js_enqueue' );
 function user_status ($user){
     $email = $user->user_email;
     $user_id = $user->ID;
-    var_dump($user_id);
     $url_email = urlencode($email);
     $url = 'https://phonebook.vcu.edu/?Qname=' . $url_email . '&Qdepartment=*';
-    $site = file_get_contents($url);
-    $fail = preg_match('/No matches/', $site, $matches);
-    if ($fail === 0) {
+    
+    $ch = curl_init(); 
+    curl_setopt($ch, CURLOPT_URL, $url); 
+
+    //return the transfer as a string 
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1); 
+
+    // $output contains the output string 
+    $output = curl_exec($ch);
+    //var_dump($output);
+    $fail = preg_match('/No matches/', $output, $matches);
+    $user = get_user_meta($user_id);
+    var_dump($user);
+    $exists = get_user_meta($user_id, 'user_vcu_status');
+    if ($fail == 0) {
         $status = 'faculty';
-        var_dump($status);
-        var_dump(add_user_meta( $user_id, 'user_vcu_status',  $status, true ));
+        if ($exists){
+            update_user_meta( $user_id, 'user_vcu_status',  $status );
+        } else {
+            add_user_meta( $user_id, 'user_vcu_status',  $status, true );
+        }
     } else {
         $status = 'student';
-        var_dump($status);
-        add_user_meta( $user_id, 'user_vcu_status', $status, true );        
+       if ($exists){
+            update_user_meta( $user_id, 'user_vcu_status',  $status );
+        } else {
+            add_user_meta( $user_id, 'user_vcu_status',  $status, true );
+        }      
     }
+    curl_close($ch);      
 }
 
 
 add_action ('wpmu_new_user', 'user_status', 10, 1);
 
 add_action( 'edit_user_profile', 'user_status', 10, 1 );
+
+/**
+ * Show custom user profile fields
+ * 
+ * @param  object $profileuser A WP_User object
+ * @return void
+ */
+function custom_user_profile_fields( $profileuser ) {
+?>
+    <table class="form-table">
+        <tr>
+            <th>
+                <label for="user_status"><?php esc_html_e( 'Status' ); ?></label>
+            </th>
+            <td>
+                <?php echo esc_attr( get_the_author_meta( 'user_vcu_status', $profileuser->ID ) ); ?>                
+            </td>
+        </tr>
+    </table>
+<?php
+}
+add_action( 'edit_user_profile', 'custom_user_profile_fields', 10, 1 );
