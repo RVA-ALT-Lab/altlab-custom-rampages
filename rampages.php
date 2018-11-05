@@ -286,13 +286,19 @@ add_action( 'admin_enqueue_scripts', 'hidden_sites_js_enqueue' );
 
 
 
-
 //write to user profile if user is faculty
 
 
 function user_status ($user){
-    $email = $user->user_email;
-    $user_id = $user->ID;
+    //attempt to differentiate between new user ID and edit profile user object
+    if (is_numeric($user)){
+        $user_id = $user;
+        $user_info = get_userdata($user_id);
+        $email = $user_info->user_email;
+    } else {
+        $email = $user->user_email;
+        $user_id = $user->ID;
+    }
     $url_email = urlencode($email);
     $url = 'https://phonebook.vcu.edu/?Qname=' . $url_email . '&Qdepartment=*';
     
@@ -304,10 +310,8 @@ function user_status ($user){
 
     // $output contains the output string 
     $output = curl_exec($ch);
-    //var_dump($output);
     $fail = preg_match('/No matches/', $output, $matches);
     $user = get_user_meta($user_id);
-    var_dump($user);
     $exists = get_user_meta($user_id, 'user_vcu_status');
     if ($fail == 0) {
         $status = 'faculty';
