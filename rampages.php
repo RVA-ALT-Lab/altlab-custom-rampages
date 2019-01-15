@@ -357,3 +357,17 @@ function custom_user_profile_fields( $profileuser ) {
 <?php
 }
 add_action( 'edit_user_profile', 'custom_user_profile_fields', 10, 1 );
+
+
+//TWITTER TIMELINE WIDGET
+// [twitter name=""]
+function altlab_twitter_func( $atts ) {
+    extract(shortcode_atts( array(
+         'name' => '', //name of account
+    ), $atts));
+
+    return '<a class="twitter-timeline" href="https://twitter.com/' . $name . '?ref_src=twsrc%5Etfw">Tweets by' . $name . '</a> <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>';
+}
+add_shortcode( 'twitter', 'altlab_twitter_func' );
+
+
