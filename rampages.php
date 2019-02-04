@@ -371,3 +371,24 @@ function altlab_twitter_func( $atts ) {
 add_shortcode( 'twitter', 'altlab_twitter_func' );
 
 
+//iframe shortcode 
+
+function alt_iframe_shortcode( $atts) {    
+    extract(shortcode_atts( array(
+         'src' => '', //site URL
+         'width' => '',
+         'height' => '',
+    ), $atts));
+    if (!$height){
+        $height ="800px";
+    }
+    if (!$width){
+        $width = "100%";
+    }
+  
+    $html = '<iframe src="' . $src .  '" height="' . $height . '" width="' . $width . '"></iframe>';    
+
+    return  $html;
+}
+
+add_shortcode( 'iframe', 'alt_iframe_shortcode' );
