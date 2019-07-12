@@ -168,6 +168,7 @@ function extraJsonData($response){
     $data['created'] =$blog_details->registered;
     $data['last_updated'] =$blog_details->last_updated;
     $data['post_count'] =$blog_details->post_count;
+    $data['page_count'] = wp_count_posts('page','publish');
     $response->set_data($data);
     return $response;
 }
@@ -359,6 +360,7 @@ function custom_user_profile_fields( $profileuser ) {
 add_action( 'edit_user_profile', 'custom_user_profile_fields', 10, 1 );
 
 
+
 //TWITTER TIMELINE WIDGET
 // [twitter name=""]
 function altlab_twitter_func( $atts ) {
@@ -369,6 +371,7 @@ function altlab_twitter_func( $atts ) {
     return '<a class="twitter-timeline" href="https://twitter.com/' . $name . '?ref_src=twsrc%5Etfw">Tweets by' . $name . '</a> <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>';
 }
 add_shortcode( 'twitter', 'altlab_twitter_func' );
+
 
 
 //iframe shortcode 
@@ -392,3 +395,19 @@ function alt_iframe_shortcode( $atts) {
 }
 
 add_shortcode( 'iframe', 'alt_iframe_shortcode' );
+
+
+//search shortcode from https://www.wpbeginner.com/wp-tutorials/how-to-add-search-form-in-your-post-with-a-wordpress-search-shortcode/
+function search_form_builder( $form ) {
+ 
+    $form = '<form role="search" method="get" id="searchform" action="' . home_url( '/' ) . '" >
+    <div><label class="screen-reader-text" for="s">' . __('Search for:') . '</label>
+    <input type="text" value="' . get_search_query() . '" name="s" id="s" />
+    <input type="submit" id="searchsubmit" value="'. esc_attr__('Search') .'" />
+    </div>
+    </form>';
+ 
+    return $form;
+}
+ 
+add_shortcode('search-it', 'search_form_builder');
