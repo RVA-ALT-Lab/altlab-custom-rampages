@@ -194,10 +194,37 @@ add_action('wp_enqueue_scripts', 'hook_gdpr_assets');
 
 /*---------------------------NEW SITE DEFAULT COMMENTS OFF ---------------------------------------*/
 
-function require_comment_login_wpmu_new_blog_example( $blog_id ) {
-    update_blog_option($blog_id,'comment_registration',1);
+
+//OLD VERSION - wasn't changeable by individual site admin
+// function require_comment_login_wpmu_new_blog_example( $blog_id ) {
+//     update_blog_option($blog_id,'comment_registration',1);
+// }
+// add_action( 'wpmu_new_blog', 'require_comment_login_wpmu_new_blog_example', 10, 1 );
+
+
+
+add_action( 'wp_loaded','rampages_require_comment_login' );
+
+
+function rampages_require_comment_login() {
+
+    add_action(
+        'wpmu_new_blog',
+        function( $blog_id, $user_id ) {
+
+            switch_to_blog( $blog_id );
+
+             update_blog_option($blog_id,'comment_registration',1); //require comment moderation
+
+            restore_current_blog();
+        },
+        10,
+        2
+    );
 }
-add_action( 'wpmu_new_blog', 'require_comment_login_wpmu_new_blog_example', 10, 1 );
+
+
+
 
 /*------------------------ FILTERING GRAVITY FORMS CONFIRMATION MESSAGE TO ALLOW VARIABLE BUT REMOVE SCIPTS ETC--------------------------------------*/
 
