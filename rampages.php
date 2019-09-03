@@ -49,6 +49,8 @@ function my_custom_mime_types( $mimes ) {
         $mimes['svg'] = 'image/svg+xml';
         $mimes['svgz'] = 'image/svg+xml';
         $mimes['studio3'] = 'application/octet-stream';
+        $mimes['tif'] = 'image/tiff';
+        $mimes['tiff'] = 'image/tiff';
 
         // Optional. Remove a mime type.
         unset( $mimes['exe'] );
@@ -239,7 +241,7 @@ add_filter( 'gform_sanitize_confirmation_message', '__return_true' );
 
 function hidden_blogs($user_id){
     //THIS SHOULD GO TO THE USER PROFILE MAYBE AND GET THE LIST -- DOES FILTER MY SITES PAGE AND DROP DOWN
-    $hidden_blogs = get_user_meta($user_id, 'my_hidden_sites', true); 
+    $hidden_blogs = get_user_meta($user_id, 'my_hidden_sites', true);
     return $hidden_blogs;
 }
 
@@ -284,8 +286,8 @@ add_action( 'personal_options_update', 'save_hidden_site_user_profile_fields' );
 add_action( 'edit_user_profile_update', 'save_hidden_site_user_profile_fields' );
 
 function save_hidden_site_user_profile_fields( $user_id ) {
-    if ( !current_user_can( 'edit_user', $user_id ) ) { 
-        return false; 
+    if ( !current_user_can( 'edit_user', $user_id ) ) {
+        return false;
     }
     update_user_meta( $user_id, 'my_hidden_sites', $_POST['my_hidden_sites'] );
 }
@@ -329,14 +331,14 @@ function user_status ($user){
     }
     $url_email = urlencode($email);
     $url = 'https://phonebook.vcu.edu/?Qname=' . $url_email . '&Qdepartment=*';
-    
-    $ch = curl_init(); 
-    curl_setopt($ch, CURLOPT_URL, $url); 
 
-    //return the transfer as a string 
-    curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1); 
+    $ch = curl_init();
+    curl_setopt($ch, CURLOPT_URL, $url);
 
-    // $output contains the output string 
+    //return the transfer as a string
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+
+    // $output contains the output string
     $output = curl_exec($ch);
     $fail = preg_match('/No matches/', $output, $matches);
     $user = get_user_meta($user_id);
@@ -354,9 +356,9 @@ function user_status ($user){
             update_user_meta( $user_id, 'user_vcu_status',  $status );
         } else {
             add_user_meta( $user_id, 'user_vcu_status',  $status, true );
-        }      
+        }
     }
-    curl_close($ch);      
+    curl_close($ch);
 }
 
 
@@ -366,7 +368,7 @@ add_action( 'edit_user_profile', 'user_status', 10, 1 );
 
 /**
  * Show custom user profile fields
- * 
+ *
  * @param  object $profileuser A WP_User object
  * @return void
  */
@@ -378,7 +380,7 @@ function custom_user_profile_fields( $profileuser ) {
                 <label for="user_status"><?php esc_html_e( 'Status' ); ?></label>
             </th>
             <td>
-                <?php echo esc_attr( get_the_author_meta( 'user_vcu_status', $profileuser->ID ) ); ?>                
+                <?php echo esc_attr( get_the_author_meta( 'user_vcu_status', $profileuser->ID ) ); ?>
             </td>
         </tr>
     </table>
@@ -401,9 +403,9 @@ add_shortcode( 'twitter', 'altlab_twitter_func' );
 
 
 
-//iframe shortcode 
+//iframe shortcode
 
-function alt_iframe_shortcode( $atts) {    
+function alt_iframe_shortcode( $atts) {
     extract(shortcode_atts( array(
          'src' => '', //site URL
          'width' => '',
@@ -415,8 +417,8 @@ function alt_iframe_shortcode( $atts) {
     if (!$width){
         $width = "100%";
     }
-  
-    $html = '<iframe src="' . $src .  '" height="' . $height . '" width="' . $width . '"></iframe>';    
+
+    $html = '<iframe src="' . $src .  '" height="' . $height . '" width="' . $width . '"></iframe>';
 
     return  $html;
 }
@@ -426,15 +428,15 @@ add_shortcode( 'iframe', 'alt_iframe_shortcode' );
 
 //search shortcode from https://www.wpbeginner.com/wp-tutorials/how-to-add-search-form-in-your-post-with-a-wordpress-search-shortcode/
 function search_form_builder( $form ) {
- 
+
     $form = '<form role="search" method="get" id="searchform" action="' . home_url( '/' ) . '" >
     <div><label class="screen-reader-text" for="s">' . __('Search for:') . '</label>
     <input type="text" value="' . get_search_query() . '" name="s" id="s" />
     <input type="submit" id="searchsubmit" value="'. esc_attr__('Search') .'" />
     </div>
     </form>';
- 
+
     return $form;
 }
- 
+
 add_shortcode('search-it', 'search_form_builder');
