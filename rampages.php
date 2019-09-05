@@ -467,7 +467,7 @@ add_shortcode('search-it', 'search_form_builder');
 // Passwords Being Eaten
 
 function passwords_eaten_js_enqueue() {
-  wp_register_script( 'password_eaten', plugins_url('assets/password-eaten.js', __FILE__), null, null, false);
+  wp_register_script( 'password_eaten', plugins_url('assets/lost-password.js', __FILE__), null, null, false);
   wp_enqueue_script('password_eaten');
 }
 
