@@ -151,6 +151,28 @@ add_filter( 'retrieve_password_title',
 );
 
 
+add_filter("retrieve_password_message", "mapp_custom_password_reset", 99, 4);
+
+function mapp_custom_password_reset($message, $key, $user_login, $user_data )    {
+
+      $message = "Someone has requested a magic login word reset for the following account:
+
+    " . sprintf(__('%s'), $user_data->user_email) . "
+
+    If this was a mistake, just ignore this email and nothing will happen.
+
+    To reset your magic word, visit the following address:
+
+    " .  '<' . network_site_url("wp-login.php?action=rp&key=$key&login=" . rawurlencode($user_login), 'login') . ">\r\n" . "
+
+    Sincerely,
+
+    The Humans of Ram Pages";
+
+
+      return $message;
+
+}
 
 //attempts to deal with activation email filtering issues
 add_filter( 'wpmu_signup_blog_notification_subject', 'rampages_activation_subject', 10, 4 );
@@ -440,3 +462,14 @@ function search_form_builder( $form ) {
 }
 
 add_shortcode('search-it', 'search_form_builder');
+
+
+// Passwords Being Eaten
+
+function passwords_eaten_js_enqueue() {
+  wp_register_script( 'password_eaten', plugins_url('assets/password-eaten.js', __FILE__), null, null, false);
+  wp_enqueue_script('password_eaten');
+}
+
+
+add_action( 'login_enqueue_scripts', 'passwords_eaten_js_enqueue' );
