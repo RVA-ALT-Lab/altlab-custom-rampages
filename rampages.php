@@ -477,7 +477,7 @@ add_shortcode('search-it', 'search_form_builder');
 //STRIP G DOC SPAN STUFF
  //LETS YOU CONTROL WHAT GETS STRIPPED IN CUT/PASTE TO MCE EDITOR 
 //fix cut paste drama from https://jonathannicol.com/blog/2015/02/19/clean-pasted-text-in-wordpress/
-add_filter('tiny_mce_before_init','configure_tinymce');
+add_filter('tiny_mce_before_init','rampages_configure_tinymce');
  
 /**
  * Customize TinyMCE's configuration
@@ -485,7 +485,7 @@ add_filter('tiny_mce_before_init','configure_tinymce');
  * @param   array
  * @return  array
  */
-function configure_tinymce($in) {
+function rampages_configure_tinymce($in) {
   $in['paste_preprocess'] = "function(plugin, args){
     // Strip all HTML tags except those we have whitelisted
     var whitelist = 'p,b,strong,i,em,h2,h3,h4,h5,h6,ul,li,ol,a,href,table,td,tr,th';
