@@ -163,7 +163,7 @@ function mapp_custom_password_reset($message, $key, $user_login, $user_data )   
 
     To reset your magic word, visit the following address:
 
-    " .  '<' . network_site_url("wp-login.php?action=rp&key=$key&login=" . rawurlencode($user_login), 'login') . ">\r\n" . "
+    " . network_site_url("wp-login.php?action=rp&key=$key&login=" . rawurlencode($user_login), 'login') . "\r\n" . "
 
     Sincerely,
 
@@ -466,10 +466,39 @@ add_shortcode('search-it', 'search_form_builder');
 
 // Passwords Being Eaten
 
-function passwords_eaten_js_enqueue() {
-  wp_register_script( 'password_eaten', plugins_url('assets/lost-password.js', __FILE__), null, null, false);
-  wp_enqueue_script('password_eaten');
+// function passwords_eaten_js_enqueue() {
+//   wp_register_script( 'password_eaten', plugins_url('assets/lost-password.js', __FILE__), null, null, false);
+//   wp_enqueue_script('password_eaten');
+// }
+
+
+// add_action( 'login_enqueue_scripts', 'passwords_eaten_js_enqueue' );
+
+//STRIP G DOC SPAN STUFF
+ //LETS YOU CONTROL WHAT GETS STRIPPED IN CUT/PASTE TO MCE EDITOR 
+//fix cut paste drama from https://jonathannicol.com/blog/2015/02/19/clean-pasted-text-in-wordpress/
+add_filter('tiny_mce_before_init','configure_tinymce');
+ 
+/**
+ * Customize TinyMCE's configuration
+ *
+ * @param   array
+ * @return  array
+ */
+function configure_tinymce($in) {
+  $in['paste_preprocess'] = "function(plugin, args){
+    // Strip all HTML tags except those we have whitelisted
+    var whitelist = 'p,b,strong,i,em,h2,h3,h4,h5,h6,ul,li,ol,a,href,table,td,tr,th';
+    var stripped = jQuery('<div>' + args.content + '</div>');
+    var els = stripped.find('*').not(whitelist);
+    for (var i = els.length - 1; i >= 0; i--) {
+      var e = els[i];
+      jQuery(e).replaceWith(e.innerHTML);
+    }
+    // Strip all class and id attributes
+    stripped.find('*').removeAttr('id').removeAttr('class').removeAttr('style');
+    // Return the clean HTML
+    args.content = stripped.html();
+  }";
+  return $in;
 }
-
-
-add_action( 'login_enqueue_scripts', 'passwords_eaten_js_enqueue' );
