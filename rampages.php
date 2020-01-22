@@ -43,7 +43,7 @@ function wpse31694_comment_author_display_name($author) {
 
 /*-------------------------------------------NEW FILE TYPES ALLOWED HERE-------------------------------------------*/
 //allow some additional file types for upload
-function my_custom_mime_types( $mimes ) {
+function altlab_custom_mime_types( $mimes ) {
 
         // New allowed mime types.
         $mimes['svg'] = 'image/svg+xml';
@@ -51,13 +51,14 @@ function my_custom_mime_types( $mimes ) {
         $mimes['studio3'] = 'application/octet-stream';
         $mimes['tif'] = 'image/tiff';
         $mimes['tiff'] = 'image/tiff';
+        $mimes['ino'] = 'text/x-c';
 
         // Optional. Remove a mime type.
         unset( $mimes['exe'] );
 
     return $mimes;
 }
-add_filter( 'upload_mimes', 'my_custom_mime_types' );
+add_filter( 'upload_mimes', 'altlab_custom_mime_types', 999,1 );
 
 
 /*------------------------------------shortcodes in widgets ---------------------------------------------------*/
@@ -112,7 +113,7 @@ function h5pflex_widget_enqueue_script() {
 /*------------------------------------PRIVACY FOOTER  ---------------------------------------------------*/
 // Make footer element for all rampages sits
 function vcu_privacy_function() {
-    $avoid = [29429, 29719];
+    $avoid = [29429, 29719, 35103];
     $id = get_current_blog_id();
     if (!in_array($id, $avoid)) {
         echo '<style>.privacy-policy { display: block; background-color:#fff; margin: 2em 0; padding: 2em; z-index: 1000; overflow: hidden;} .privacy-policy a {color: #424242}</style>';
@@ -502,3 +503,9 @@ function rampages_configure_tinymce($in) {
   }";
   return $in;
 }
+
+
+//buddypress profile photo size being weird
+add_filter( 'bp_core_avatar_original_max_filesize', function() {
+    return 5120000; // 5mb
+} );
