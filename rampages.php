@@ -113,11 +113,26 @@ function h5pflex_widget_enqueue_script() {
 /*------------------------------------PRIVACY FOOTER  ---------------------------------------------------*/
 // Make footer element for all rampages sits
 function vcu_privacy_function() {
-    $avoid = [29429, 29719, 35103];
+    $avoid = [29429, 29719, 35103, 36135];
     $id = get_current_blog_id();
     if (!in_array($id, $avoid)) {
         echo '<style>.privacy-policy { display: block; background-color:#fff; margin: 2em 0; padding: 2em; z-index: 1000; overflow: hidden;} .privacy-policy a {color: #424242}</style>';
         echo '<div class="privacy-policy" id="private"><a href="https://rampages.us/privacy-policy/">Privacy Statement</a></div>';
+        echo '<!-- Matomo -->
+<script type="text/javascript">
+  var _paq = window._paq = window._paq || [];
+  /* tracker methods like "setCustomDimension" should be called before "trackPageView" */
+  _paq.push(["trackPageView"]);
+  _paq.push(["enableLinkTracking"]);
+  (function() {
+    var u="https://stats.rampages.us/";
+    _paq.push(["setTrackerUrl", u+"matomo.php"]);
+    _paq.push(["setSiteId", "3"]);
+    var d=document, g=d.createElement("script"), s=d.getElementsByTagName("script")[0];
+    g.type="text/javascript"; g.async=true; g.src=u+"matomo.js"; s.parentNode.insertBefore(g,s);
+  })();
+</script>
+<!-- End Matomo Code -->';
     }
 }
 add_action( 'wp_footer', 'vcu_privacy_function', 100 );
@@ -203,15 +218,18 @@ add_filter('rest_index', 'extraJsonData');
 /*---------------------------------GDPR NONSENSE------------------------------*/
 
 function hook_gdpr_assets() {
+    $avoid = [29429, 29719, 35103, 36135];
+        $id = get_current_blog_id();
+        if (!in_array($id, $avoid)) {
+            wp_register_style('cookie_consent','//cdnjs.cloudflare.com/ajax/libs/cookieconsent2/3.1.0/cookieconsent.min.css');
+            wp_enqueue_style('cookie_consent');
 
-    wp_register_style('cookie_consent','//cdnjs.cloudflare.com/ajax/libs/cookieconsent2/3.1.0/cookieconsent.min.css');
-    wp_enqueue_style('cookie_consent');
+            wp_register_script('cookie_consent_js','//cdnjs.cloudflare.com/ajax/libs/cookieconsent2/3.1.0/cookieconsent.min.js', null, null, false);
+            wp_enqueue_script('cookie_consent_js');
 
-    wp_register_script('cookie_consent_js','//cdnjs.cloudflare.com/ajax/libs/cookieconsent2/3.1.0/cookieconsent.min.js', null, null, false);
-    wp_enqueue_script('cookie_consent_js');
-
-    wp_register_script('gdpr_popup_js', plugins_url('assets/gdpr-popup.js', __FILE__), null, null, false);
-    wp_enqueue_script('gdpr_popup_js');
+            wp_register_script('gdpr_popup_js', plugins_url('assets/gdpr-popup.js', __FILE__), null, null, false);
+            wp_enqueue_script('gdpr_popup_js');
+        }
 }
 
 add_action('wp_enqueue_scripts', 'hook_gdpr_assets');
@@ -509,3 +527,55 @@ function rampages_configure_tinymce($in) {
 add_filter( 'bp_core_avatar_original_max_filesize', function() {
     return 5120000; // 5mb
 } );
+
+
+//add kaltura oembed option
+function vcu_kaltura_add_oembed_handlers(){
+    wp_oembed_add_provider( 'https://vcu.mediaspace.kaltura.com/id/*', 'https://vcu.mediaspace.kaltura.com/oembed/', false );
+}
+add_action( 'init', 'vcu_kaltura_add_oembed_handlers');
+
+
+//ADD file size to media library from https://sridharkatakam.com/add-file-size-admin-column-wordpress-media-library/
+add_filter( 'manage_media_columns', 'sk_media_columns_filesize' );
+/**
+ * Filter the Media list table columns to add a File Size column.
+ *
+ * @param array $posts_columns Existing array of columns displayed in the Media list table.
+ * @return array Amended array of columns to be displayed in the Media list table.
+ */
+function sk_media_columns_filesize( $posts_columns ) {
+    $posts_columns['filesize'] = __( 'File Size', 'my-theme-text-domain' );
+
+    return $posts_columns;
+}
+
+add_action( 'manage_media_custom_column', 'sk_media_custom_column_filesize', 10, 2 );
+/**
+ * Display File Size custom column in the Media list table.
+ *
+ * @param string $column_name Name of the custom column.
+ * @param int    $post_id Current Attachment ID.
+ */
+function sk_media_custom_column_filesize( $column_name, $post_id ) {
+    if ( 'filesize' !== $column_name ) {
+        return;
+    }
+
+    $bytes = filesize( get_attached_file( $post_id ) );
+
+    echo size_format( $bytes, 2 );
+}
+
+add_action( 'admin_print_styles-upload.php', 'sk_filesize_column_filesize' );
+/**
+ * Adjust File Size column on Media Library page in WP admin
+ */
+function sk_filesize_column_filesize() {
+    echo
+    '<style>
+        .fixed .column-filesize {
+            width: 10%;
+        }
+    </style>';
+}
