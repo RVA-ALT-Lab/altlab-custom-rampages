@@ -564,3 +564,88 @@ function sk_filesize_column_filesize() {
         }
     </style>';
 }
+
+
+//add site ID
+
+// Hook to columns on network sites listing
+add_filter( 'wpmu_blogs_columns', 'rampages_blogs_columns' );
+ 
+/**
+* To add a columns to the sites columns
+*
+* @param array
+*
+* @return array
+*/
+function rampages_blogs_columns($sites_columns)
+{
+    //array_slice ( array $array , int $offset [, int|null $length = NULL [, bool $preserve_keys = FALSE ]] ) : array
+
+    $columns_1 = array_slice( $sites_columns, 1, 2 );
+    $columns_2 = array_slice( $sites_columns, 2 );
+     
+    $sites_columns = $columns_1 + array( 'content' => 'Posts/Pages' ) + $columns_2;
+     
+    return $sites_columns;
+}
+
+function sort_rampages_sites_custom_column(){
+    $columns['content'] = 'Posts/Pages';
+    return $columns;
+}
+
+
+// Hook to manage column data on network sites listing
+add_action( 'manage_sites_custom_column', 'rampages_sites_custom_column', 10, 2 );
+
+/**
+* Show page post count
+*
+* @param string
+* @param integer
+*
+* @return void
+*/
+function rampages_sites_custom_column($column_name, $blog_id)
+{
+    if ( $column_name == 'content' ) {
+         switch_to_blog($blog_id);
+            $pages = wp_count_posts('page','publish')->publish;
+            $posts = wp_count_posts('post', 'publish')->publish;
+    restore_current_blog();
+   
+    if ($posts < 1){
+        $posts = 0;
+    }
+        echo  $posts . '/' . $pages ;
+    }
+}
+
+
+
+//MY SITES DASHBOARD WIDGET********************************
+// My Sites Dashboard widget
+
+// function tees_network_dashboard_widget_setup() {
+//     add_meta_box(
+//         'tees_dashboard_mysites_widget',
+//         'My Sites',
+//         'tees_dashboard_mysites_widget',
+//         'dashboard', 
+//         'normal',
+//         'high'
+//     );
+// }
+
+// add_action( 'wp_dashboard_setup', 'tees_network_dashboard_widget_setup', 99 );
+
+
+// function tees_dashboard_mysites_widget() { 
+//     echo '<ul>';
+//     $blogs = get_blogs_of_user( get_current_user_id() );
+//     foreach ( $blogs as $blog ) {
+//         echo '<li><a href="'. esc_url( get_admin_url( $blog->userblog_id ) ) .'" title="'. sprintf( esc_html__( '%s Dashboard', 'tees' ), $blog->blogname ) .'">'. esc_html( $blog->blogname ) .'</a></li>';
+//     }
+//     echo '</ul>';
+// }
